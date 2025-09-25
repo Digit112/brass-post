@@ -11,6 +11,8 @@ using namespace System.Console
 using namespace System.Math
 using namespace System.Collections.Generic
 
+. .\CommandLibrary.ps1
+
 # Load userdata
 $userdata = @{}
 $userdata_delim = "# BRASS POST USERDATA "

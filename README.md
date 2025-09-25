@@ -2,13 +2,15 @@
 
 Brass-Post is a command-line based, serverless, networked group messaging system.
 
+The intended workflow is for the user to enter the console and join a chat. From then on, they interact by sending messages and interacting with existing messages.
+
 ## Command Usage
 
 The following shows the usage of Brass-Post, including important flags. The application also has a built-in console with different functionality.
 
 ```
 Usage:
-Brass-Post -Listen
+Brass-Post -Console
 Brass-Post -AddKeyLoc <String> -IdentityName <String>
 Brass-Post -KeyGen -IdentityName <String> [-FolderPath <String>]
 Brass-Post -ExportUserData [-FilePath <String>] [-IncludeIdentityLoc]
@@ -20,6 +22,7 @@ Brass-Post -ImportUserData [-FilePath <String>] [-IncludeIdentityLoc]
 | Flag                  | Description
 | :-------------------- | :----------
 | `-AddKeyLoc`          | Adds the passed path as a directory within which to search for identity keyfiles.
+| `-Console`            | Launches into the Brass-Post console.
 | `-ExportUserData`     | Exports the JSON configuration data stored within the file itself.
 | `-FilePath`           | The file to export to/import from, defaults to "brass-post-data.json"
 | `-FolderPath`         | The folder to output generated files to. Default is the current directory.
@@ -27,7 +30,6 @@ Brass-Post -ImportUserData [-FilePath <String>] [-IncludeIdentityLoc]
 | `-ImportUserData`     | Exports the JSON configuration data stored within the file itself.
 | `-IncludeIdentityLoc` | Includes the path to identity keyfiles in an export or import, not the keys themselves.
 | `-KeyGen`             | Generates a new identity
-| `-Listen`             | Opens known chats and launches into the Brass-Post console.
 
 ## The Brass-Post Console
 
@@ -36,14 +38,14 @@ Type text into the prompt at the bottom of the console and hit enter to send, or
 
 Tap the '/' key to toggle command mode on and off.
 
-### Identity
+### Identities
 
 Multiple parameters take an "Identity". This can be an IPv4 or IPv6 address, or a domain name, the nickname of a known user, or a prefix or suffix of the public key of a known user. In all cases, a port may be appended to the end, preceeded by a colon.
 
 ### Join-Channel
 
 ```
-/Join-Channel [-Name] <String>
+/Join-Channel <[-Name] <String> | -Identity <Identity>>
 ```
 
 Connects to the channel with the specified name. The channel must have been previously persisted either with `-ImportUserData` or `/Get-Channels`, or created with `/New-Channel`
@@ -51,7 +53,7 @@ Connects to the channel with the specified name. The channel must have been prev
 ### Get-Channels
 
 ```
-/Get-Channels -Identity <Identity>
+/Get-Channels [-Identity] <Identity>
 ```
 
 Requests a copy of this peer's channels, which are persisted between sessions. The peer can be specified as an IPv4 or IPv6 address or domain. A port may be added, preceeded by a colon as in `127.0.0.1:27277` or `server.mydomain:27277`. With an IPv6 address with a port, the address must be enclosed in square brackets as in `[::1]:27277`. `27277` is the default port.
@@ -71,18 +73,4 @@ Creates and persists a new channel.
 ```
 
 Shows details about the selected user such as their past nicknames (as known to this client), their public key
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
