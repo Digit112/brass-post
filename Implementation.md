@@ -37,15 +37,15 @@ Make-Trio <String String...3>
 
 In this case, they may specify up to three pairs of strings.
 
-## Names
+## Subexpression Labels
 
-A subexpression may begin with a name followed by a colon:
+A subexpression may begin with a label followed by a colon:
 
 ```
 New-Animal <species: [-Species] <Dog | Cat | Fish>>
 ```
 
-This is a named subexpression. It is an error for any two subexpressions in a command to have the same name.
+This is a named subexpression. Subexpression names do not need to be unique.
 
 ## User Entry & Help
 
@@ -68,7 +68,7 @@ An expression such as `<Integer [Integer]...> [Integer]` is ambiguous. For examp
 
 Some situations are ambiguous,
 
-## Edge Cases
+## Tips & Edge Cases
 
 ### Whitespace in Command Definitions
 
@@ -88,7 +88,17 @@ The user could write:
 My-Command -Flag1 "Some Text" -Flag2 Name1 12, Name2 45
 ```
 
-### 
+### Recursive Evaluation
+
+Angle-braces are just subexpressions and they are evaluated recursively with the same exact code that evaluates the whole command. So, you can (and should) give the whole command a label, or add a pipe to delimit different command usages, or even (for some reason) add ellipses to the end to allow repetition.
+
+```
+command_label:
+My-Command -UsageStr [<name: -Name <String>>] |
+My-Command -UsageInt [<name: -Name <Integer>>]
+```
+
+The above command has two usages, one for string input and one for integer input. The command's layout requires that the user 
 
 ### Empty Subexpression Error
 
@@ -104,16 +114,18 @@ It is an error for an angle-bracket closed expression to match nothing. Some exa
 
 Recall that strings are always trimmed.
 
-### Repeating Commands
+# Using the CommandLibrary
 
-Angle-braces are just subexpressions and they are evaluated recursively with the same code that evaluates the whole command. So technically you can add an ellipses to the end of a command to make it repeatable...
+The CommandLibrary accepts "ParsedExpression" types and matches them to the user's input. Such a type is generated from a string with the syntax decribed in the preceeding section. Internally, each begins by generating a TokenizedExpression and working off of that.
 
-```
-My-Command <Integer> <String> ...
-```
+Each 
 
-The above is matched by:
+# Using the Commands
 
-```
-My-Command 3 Words My-Command 234 "More Words"
-```
+## Help Output
+
+The `help()` function on a `ParsedExpression` returns a string with a line for every option in that root expression.
+For each such option, the `define()` function is called, and the outputs are concatenated.
+
+The `define()` function 
+
