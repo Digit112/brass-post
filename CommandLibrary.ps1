@@ -59,24 +59,36 @@ class TokenizedExpression {
 			
 			# Index of single-quote character that began the current string.
 			# -1 means we are not in a string.
-			[int] string_start_i = -1
+			[int] $string_start_i = -1
 			
 			# True if the previous character is an un-escaped backslash.
-			[bool] escaping = false
+			[bool] $escaping = $false
 			
 			#### Iteration ####
 			
-			for ([int] $i = offset; $i < $definition.Length; $i++) {
+			for ([int] $i = $offset; $i -lt $definition.Length; $i++) {
+				[char] $character = $definition[$i]
 				
+				# Check if in string.
+				if ($string_start_i != -1) {
+					# Previous character was backslash.
+					if ($escaping) {
+						if ($character -eq '\') {
+							
+					}
+				}
 			}
 		}
 		else {
-			$this.Tokens = null
-			$this.Label = null
+			$this.Tokens = $null
+			$this.Label = $null
 		}
 	}
 }
 
 enum ExpressionTokType {
 	SUBEXPRESSION,
+	INPUTTYPE,
+	LITERAL
+}
 	

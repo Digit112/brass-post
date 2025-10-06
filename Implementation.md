@@ -112,7 +112,7 @@ An expression such as `<Integer [Integer]...> [Integer]` is ambiguous. For examp
 
 Another example is `<String...> | <Integer...>`. A list of integers matches both options here. With this situation, the parser again is greedy, choosing whichever option consumes the most text. (If this causes an error down the line, the parser will backtrack and try matching the other option.)
 
-If the options are the same length, it chooses whichever is further left in the definition, so order matters! Anything matched by this pattern will be considered an array of strings.
+If the options are the same length, it chooses whichever is further left in the definition, so order matters! Anything matched by this pattern will be considered an array of strings. If we swap the order, we get `<Integer...> | <String...>`, which has interesting characteristics. It will match any list of integers, but if a string is found anywhere in the list then it all suddenly becomes a list of strings.
 
 ## Tips & Edge Cases
 
@@ -136,7 +136,7 @@ My-Command -Flag1 "Some Text" -Flag2 Name1 12, Name2 45
 
 ### Recursive Evaluation
 
-Angle-braces are just subexpressions and they are evaluated recursively with the same exact code that evaluates the whole command. So, you can (and should) give the whole command a label, or add a pipe to delimit different command usages, or even (for some reason) add ellipses to the end to allow repetition.
+Subexpressions are evaluated recursively with the same exact code that evaluates the whole expression. So, you can (and should) give the whole command a label, or add a pipe to delimit different command usages, or even (for some reason) add ellipses to the end to allow repetition.
 
 ```
 command_label:
@@ -144,21 +144,19 @@ My-Command -UsageStr [<name: -Name <String>>] |
 My-Command -UsageInt [<name: -Name <Integer>>]
 ```
 
-The above command has two usages, one for string input and one for integer input. The command's layout requires that the user 
+The above command has two usages, one for string input and one for integer input. The command's layout requires that the user explicitly specify (with the flag name) which they are using.
 
 ### Empty Subexpression Error
 
-It is an error for an angle-bracket closed expression to match nothing. Some examples below will all fail to compile:
+It is an error for the whole expressions or any subexpression to match notthing (unless it is optional). Some examples below will all fail to compile:
 
 ```
 <>
-<[Something]>
-<[Something]...>
-<' '>
-<' ' | Something>
+[Something]
+[Something]...
+<''>
+<'' | Something>
 ```
-
-Recall that strings are always trimmed.
 
 # Using the CommandLibrary
 
