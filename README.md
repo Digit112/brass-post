@@ -74,3 +74,33 @@ Creates and persists a new channel.
 
 Shows details about the selected user such as their past nicknames (as known to this client), their public key
 
+## Taglines
+
+Taglines are up to 64 characters long and show when Brass-Post starts up.
+
+```
+/Add-Tagline [-Tagline] <string> [-Shared]
+```
+
+Adds a tagline with a chance of showing on startup. If `-Shared` is included, taglines will sometimes be transmitted alongside normal messages and commands, and might start showing up on others' systems - *with your name on them*.
+
+```
+/Toggle-Tagline-Sharing
+```
+
+Toggles tagline sharing on or off. If it is off, your system will not share any taglines, nor disable taglines that were shared with you.
+
+```
+/List-Taglines
+```
+
+Lists all taglines on your system.
+
+```
+1. /Delete-Tagline -AllDefaults
+2. /Delete-Tagline [-Index] <integer>
+```
+
+Usage 1. Delete all taglines that are included by default. Can't be undone, stupid.
+
+Usage 2. Deletes the indexed tagline. Get the index from `/List-Taglines`.
