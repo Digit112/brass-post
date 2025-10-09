@@ -1,20 +1,10 @@
 using namespace System.Collections.Generic
 
-class CommandLibrary {
-    [string]                   $Name
-    [List[CompiledExpression]] $Commands
-    
-    CommandLibrary([string] $name) {
-        $this.Name = $name
-        $this.Commands = [List[CompiledExpression]]::new()
-    }
-    
-    AddCommand([CompiledExpression] $command) {
-        $this.Commands.Add($command)
-    }
-}
+#### ExprComp - Expression Compilation ####
+# The Expression Compilation Module compiles expressions as per the command definition syntax specified in 'docs\Command Definition Syntax.md'
+# The module implements an extremely flexible metalanguage very reminiscent of ABNF.
 
-class CompiledExpression {
+class ExprCompCompiledExpression {
     [string] $Definition
 	
 	[string] $Label
@@ -22,10 +12,25 @@ class CompiledExpression {
 	[bool]   $IsChoice
 	[int]    $MaxOccurences # 0 represents infinity.
 
-    CompiledExpression([TokenizedExpression] $definition) {
+    ExprCompCompiledExpression([ExprCompTokenizedExpression] $definition) {
 		$this.Definition = $definition
 		
-		$tokenized = [TokenizedExpression]::new($definition)
+		$tokenized = [ExprCompTokenizedExpression]::new($definition)
+	}
+}
+
+# Represents a single token which will be of type subexpression, string, or type.
+class ExprCompToken {
+    [string] $Definition
+	[string] $TokType
+	
+	PrimitiveToken([string] $definition, [string] $tokType) {
+		$this.Definition = $Definition
+		$this.TokType = $tokType
+	}
+	
+	consume([string] $text, [int] $offset) {
+		Write-Host 'Consuming ExprCompToken'
 	}
 }
 
@@ -33,39 +38,16 @@ class CompiledExpression {
 # The 'subexpression' TokType in particular can be made of sub-tokens including other subexpressions,
 # forming a hierarchical tree.
 # Other types represent individual tokens.
-class TokenizedExpression {
-    [string] $Definition
-	
-	[ExpressionTokType] $TokType
-	
+class ExprCompTokenizedExpression : ExprCompToken {
 	# A list of options, each of which will attempt a match to the passed definition.
 	# For each option, 
-	[List[List[TokenizedExpression]]] $Options
+	[List[List[ExprCompToken]]] $Options
 	
 	# The provided definition is for the root expression. An offset gives the index of the first character in this subexpression.
 	# If the first character is a '<' or '[', this will parse until it finds the matching character.
-	TokenizedExpression([string] $definition, [int] $offset, [string] $tokType, [bool] $optional, [int] $depth) {
+	ExprCompTokenizedExpression([string] $definition, [string] $tokType, [int] $offset, [int] $depth)  : base($definition, $tokType) {
 		if ($depth -ge 128) {
 			throw 'Subexpression depth limit reached.'
-		}
-		
-		# Check what we're parsing.
-		# That is, whether it's a root expression or not, and whether it is optional.
-		if ($offset -eq -1) {
-			$this.Optional = $false
-			$this.Root = $this
-			$this.Parent = $null
-		}
-		else {
-			if ($defition[$offset] -eq '[') {
-				$this.Optional = $true
-			}
-			elseif($defition[$offset] -eq '<') {
-				$this.Optional = $false
-			}
-			else {
-				throw '"offset" parameter must be -1 (for the root expression) or point to a '<' or '[' character depending on whether it i9s optional.'
-			}
 		}
 		
 		$this.Definition = $definition
@@ -73,9 +55,27 @@ class TokenizedExpression {
 		
 		$this.MaxOccurences = 1
 		
-		# The provided 
 		if ($this.TokType -eq 'subexpression') {
-			$this.Options = [List[TokenizedExpression]]::new()
+			# Check what we're parsing.
+			# That is, whether it's a root expression or not, and whether it is optional.
+			if ($offset -eq -1) {
+				$this.Optional = $false
+				$this.Root = $this
+				$this.Parent = $null
+			}
+			else {
+				if ($definition[$offset] -eq '[') {
+					$this.Optional = $true
+				}
+				elseif($definition[$offset] -eq '<') {
+					$this.Optional = $false
+				}
+				else {
+					throw "For token type 'subexpression', 'offset' parameter must be -1 (for the root expression) or point to a '<' or '[' character depending on whether it i9s optional."
+				}
+			}
+			
+			$this.Options = [List[ExprCompTokenizedExpression]]::new()
 			
 			#### State ####
 			
@@ -151,10 +151,8 @@ class TokenizedExpression {
 			$this.Label = $null
 		}
 	}
-}
-
-enum ExpressionTokType {
-	SUBEXPRESSION
-	INPUTTYPE
-	LITERAL
+	
+	consume([string] $text, [int] $offset) {
+		Write-Host 'Consuming ExprCompTokenizedExpression'
+	}
 }

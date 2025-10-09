@@ -1,13 +1,6 @@
-# Brass-Protocol
-
-The protocol used by brass-post is to send UTF-8 encoded JSON to a message's recipient over TCP. The keys are `method`, `content`, and `identity`.
-
-
 # Command Definition Syntax
 
-Commands - in the Brass-Post console *and* while using flags when evoking Brass-Post - use a custom, recursive syntax something like ABNF but using different symbols.
-
-An expression consists of a sequence of tokens separated by whitespace. They are completely case-insensitive except within double-quote enclosed literals.
+Commands - in the Brass-Post console *and* while using flags when evoking Brass-Post - use a custom, recursive syntax something like ABNF but using different symbols. An expression consists of a sequence of tokens separated by whitespace. They are completely case-insensitive except within cased quoted string literals.
 
 ## String Literals
 
@@ -25,7 +18,7 @@ is an equivalent definition and - as it happens - also matches against our origi
 
 ## Types
 
-The literal text `Integer`, `Float`, `String`, and `Bool` are keywords that correspond to typenames. Where one is expected, the matched text's input is read off and converted to the appropriate type. For example, the pattern `Integer Integer Integer` looks similar to the first pattern in that it consists of three whitespace-separated tokens of letters, but is quite differnt. It will match three whitespace-separated decimal numbers, like for example `12 7 2`.
+The literal text `integer`, `float`, `string`, and `bool` are keywords that correspond to typenames. Where one is expected, the matched text's input is read off and converted to the appropriate type. For example, the pattern `integer integer integer` looks similar to the first pattern in that it consists of three whitespace-separated tokens of letters, but is quite differnt. It will match three whitespace-separated decimal numbers, like for example `12 7 2`.
 
 ## Quoted String Literals
 
@@ -33,7 +26,7 @@ Quoted literals are text enclosed by single-quotes `''` or double-quotes `""`. T
 
 For example, the pattern `'A Brown Dog'` contains only one token, which has two spaces, and those spaces cannot be substituted for arbitrary whitespace like before. They are matched literally. However, the match is still case-insensitive. For a case-sensitive match, prefix the string with an `s` like `s'A Brown Dog'`. This pattern will ONLY match exactly the text `A Brown Dog`. Nothing else.
 
-Quoted literals also allow you to match keywords like `Integer` and `Bool`.
+Quoted literals also allow you to match keywords like `integer` and `bool`.
 
 Quoted literals also may include the following escape sequences which have their usual meaning: `\n`, `\r`, `\t`, `\'`, `\"`, `\\`. Any backslash not included in one of these sequences is interpreted as a literal backslash. This is actually the same functionality available to the user when entering a string.
 
